@@ -1,23 +1,56 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref } from "vue";
 
-defineOptions({ name: 'CustomIconSelect' });
+defineOptions({ name: "CustomIconSelect" });
+
+const iconList: string[] = [
+  "mdi:emoticon",
+  "mdi:ab-testing",
+  "ph:alarm",
+  "ph:android-logo",
+  "ph:align-bottom",
+  "ph:archive-box-light",
+  "uil:basketball",
+  "uil:brightness-plus",
+  "uil:capture",
+  "mdi:apps-box",
+  "mdi:alert",
+  "mdi:airballoon",
+  "mdi:airplane-edit",
+  "mdi:alpha-f-box-outline",
+  "mdi:arm-flex-outline",
+  "ic:baseline-10mp",
+  "ic:baseline-access-time",
+  "ic:baseline-brightness-4",
+  "ic:baseline-brightness-5",
+  "ic:baseline-credit-card",
+  "ic:baseline-filter-1",
+  "ic:baseline-filter-2",
+  "ic:baseline-filter-3",
+  "ic:baseline-filter-4",
+  "ic:baseline-filter-5",
+  "ic:baseline-filter-6",
+  "ic:baseline-filter-7",
+  "ic:baseline-filter-8",
+  "ic:baseline-filter-9",
+  "ic:baseline-filter-9-plus",
+];
 
 interface Props {
   /** Selected icon */
   value: string;
   /** List of icons */
-  icons: string[];
+  icons?: string[];
   /** Icon for when nothing is selected */
   emptyIcon?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  emptyIcon: 'mdi:apps'
+  emptyIcon: "mdi:apps",
 });
 
 interface Emits {
-  (e: 'update:value', val: string): void;
+  (e: "update:value", val: string): void;
 }
 
 const emit = defineEmits<Emits>();
@@ -27,15 +60,21 @@ const modelValue = computed({
     return props.value;
   },
   set(val: string) {
-    emit('update:value', val);
-  }
+    emit("update:value", val);
+  },
 });
 
 const selectedIcon = computed(() => modelValue.value || props.emptyIcon);
 
-const searchValue = ref('');
+const searchValue = ref("");
 
-const iconsList = computed(() => props.icons.filter(v => v.includes(searchValue.value)));
+const iconsList = computed(() => {
+  if (props.icons && props.icons.length) {
+    return props.icons.filter((v) => v.includes(searchValue.value));
+  }else {
+    return iconList.filter((v) => v.includes(searchValue.value))
+  }
+});
 
 function handleChange(iconItem: string) {
   modelValue.value = iconItem;
@@ -45,7 +84,7 @@ function handleChange(iconItem: string) {
 <template>
   <NPopover placement="bottom-end" trigger="click">
     <template #trigger>
-      <NInput v-model:value="modelValue" readonly placeholder="点击选择图标">
+      <NInput v-model:value="modelValue" placeholder="点击选择图标">
         <template #suffix>
           <SvgIcon :icon="selectedIcon" class="p-5px text-30px" />
         </template>
@@ -54,8 +93,15 @@ function handleChange(iconItem: string) {
     <template #header>
       <NInput v-model:value="searchValue" placeholder="搜索图标"></NInput>
     </template>
-    <div v-if="iconsList.length > 0" class="grid grid-cols-9 h-auto overflow-auto">
-      <span v-for="iconItem in iconsList" :key="iconItem" @click="handleChange(iconItem)">
+    <div
+      v-if="iconsList.length > 0"
+      class="grid grid-cols-9 h-auto overflow-auto"
+    >
+      <span
+        v-for="iconItem in iconsList"
+        :key="iconItem"
+        @click="handleChange(iconItem)"
+      >
         <SvgIcon
           :icon="iconItem"
           class="m-2px cursor-pointer border-1px border-#d9d9d9 p-5px text-30px"

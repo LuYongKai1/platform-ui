@@ -11,6 +11,8 @@ import { createRouterGuard } from './guard';
 
 const { VITE_ROUTER_HISTORY_MODE = 'history', VITE_BASE_URL } = import.meta.env;
 
+
+
 const historyCreatorMap: Record<Env.RouterHistoryMode, (base?: string) => RouterHistory> = {
   hash: createWebHashHistory,
   history: createWebHistory,
@@ -23,8 +25,12 @@ export const router = createRouter({
 });
 
 /** Setup Vue Router */
+// 导出一个异步函数，用于设置路由
 export async function setupRouter(app: App) {
+  // 使用路由
   app.use(router);
+  // 创建路由守卫
   createRouterGuard(router);
+  // 等待路由准备就绪
   await router.isReady();
 }

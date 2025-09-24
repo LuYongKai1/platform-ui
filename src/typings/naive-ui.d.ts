@@ -16,7 +16,7 @@ declare namespace NaiveUI {
    *
    * if you want to add a custom column, you should add a key to this type
    */
-  type CustomColumnKey = 'operate';
+  type CustomColumnKey = 'operate' | 'id' | 'operator' | 'gmCode' | 'gmName' | 'paramJson' | 'createDate' | 'serverId' | 'gmStatus' | 'gmUrl' | 'roleId' | 'userId' | 'msg' | 'targetDay' | 'channelId' | 'roleAdd' | 'addPayed' | 'addTotal' | 'newPayRate' | 'newARPU' | 'roleLogin' | 'rolePayed' | 'payedTotal' | 'loginPayRate' | 'loginARPU' | 'avgOnlineTime' | 'avgGameSessions' | 'avgOnlineUsers';
 
   type SetTableColumnKey<C, T> = Omit<C, 'key'> & { key: keyof T | CustomColumnKey };
 
@@ -50,5 +50,11 @@ declare namespace NaiveUI {
      * @default false
      */
     showTotal?: boolean;
+    /**
+     * default hidden column keys
+     *
+     * @default []
+     */
+    defaultHiddenKeys?: string[];
   };
 }

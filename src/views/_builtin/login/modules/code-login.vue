@@ -12,7 +12,6 @@ defineOptions({
 const { toggleLoginModule } = useRouterPush();
 const { formRef, validate } = useNaiveForm();
 const { label, isCounting, loading, getCaptcha } = useCaptcha();
-
 interface FormModel {
   phone: string;
   code: string;
@@ -33,6 +32,7 @@ const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
 });
 
 async function handleSubmit() {
+
   await validate();
   // request
   window.$message?.success($t('page.login.common.validateSuccess'));

@@ -1,13 +1,39 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { $t } from '@/locales';
 import { useAppStore } from '@/store/modules/app';
 import { useEcharts } from '@/hooks/common/echarts';
+import { fetchGetHomeData } from '@/service/api/system-manage';
 
 defineOptions({
   name: 'PieChart'
 });
 
+interface HomeDataResponse {
+  totalAmount: number;
+  onlineUser: number;
+  userRecord: number;
+  userRole: number;
+  levelDistribution: {
+    range: string;
+    count: number;
+  }[];
+}
+
+interface ApiResponse {
+  error: any;
+  response?: {
+    data: HomeDataResponse;
+    status: number;
+    statusText: string;
+    headers: Record<string, string>;
+    config: any;
+    request: any;
+  };
+  data?: HomeDataResponse;
+}
+
+const levelData = ref<{range: string; count: number}[]>([]);
 const appStore = useAppStore();
 
 const { domRef, updateOptions } = useEcharts(() => ({
@@ -51,42 +77,43 @@ const { domRef, updateOptions } = useEcharts(() => ({
   ]
 }));
 
-async function mockData() {
-  await new Promise(resolve => {
-    setTimeout(resolve, 1000);
-  });
+async function fetchAndUpdateData() {
+  try {
+    const result = await fetchGetHomeData() as unknown as ApiResponse;
+    if (result && result.response && result.response.data && result.response.data.levelDistribution) {
+      levelData.value = result.response.data.levelDistribution;
+    } else if (result && result.data && result.data.levelDistribution) {
+      levelData.value = result.data.levelDistribution;
+    }
 
+    updateLevelDistribution();
+  } catch (error) {
+    updateLevelDistribution();
+  }
+}
+
+function updateLevelDistribution() {
   updateOptions(opts => {
-    opts.series[0].data = [
-      { name: $t('page.home.study'), value: 20 },
-      { name: $t('page.home.entertainment'), value: 10 },
-      { name: $t('page.home.work'), value: 40 },
-      { name: $t('page.home.rest'), value: 30 }
-    ];
-
+    opts.series[0].data = levelData.value.map(item => ({
+      name: item.range,
+      value: item.count
+    }));
     return opts;
   });
 }
 
 function updateLocale() {
   updateOptions((opts, factory) => {
-    const originOpts = factory();
+    opts.series[0].name = '等级分布';
 
-    opts.series[0].name = originOpts.series[0].name;
-
-    opts.series[0].data = [
-      { name: $t('page.home.study'), value: 20 },
-      { name: $t('page.home.entertainment'), value: 10 },
-      { name: $t('page.home.work'), value: 40 },
-      { name: $t('page.home.rest'), value: 30 }
-    ];
-
+    if (levelData.value && levelData.value.length > 0) {
+      opts.series[0].data = levelData.value.map(item => ({
+        name: item.range,
+        value: item.count
+      }));
+    }
     return opts;
   });
-}
-
-async function init() {
-  mockData();
 }
 
 watch(
@@ -96,14 +123,15 @@ watch(
   }
 );
 
-// init
-init();
+onMounted(() => {
+  fetchAndUpdateData();
+});
 </script>
 
 <template>
   <NCard :bordered="false" class="card-wrapper">
+    <div class="text-center text-16px font-bold mb-2">{{ $t('page.home.level') }}</div>
     <div ref="domRef" class="h-360px overflow-hidden"></div>
   </NCard>
 </template>
-
 <style scoped></style>

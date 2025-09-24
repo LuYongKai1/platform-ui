@@ -32,7 +32,7 @@ declare namespace Env {
      *
      * when the code is received, the request is successful
      */
-    readonly VITE_SERVICE_SUCCESS_CODE: string;
+    readonly: string;
     /**
      * logout codes of backend service
      *
@@ -64,7 +64,7 @@ declare namespace Env {
      *
      * the value is a json
      */
-    readonly VITE_OTHER_SERVICE_BASE_URL: string;
+    readonly : string;
     /**
      * Whether to enable the http proxy
      *

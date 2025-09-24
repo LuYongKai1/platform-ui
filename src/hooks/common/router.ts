@@ -37,7 +37,6 @@ export function useRouterPush(inSetup = true) {
     if (Object.keys(params || {}).length) {
       routeLocation.params = params;
     }
-
     return routerPush(routeLocation);
   }
 
@@ -67,19 +66,21 @@ export function useRouterPush(inSetup = true) {
   async function toLogin(loginModule?: UnionKey.LoginModule, redirectUrl?: string) {
     const module = loginModule || 'pwd-login';
 
-    const options: RouterPushOptions = {
-      params: {
-        module
-      }
+    const routeLocation: RouteLocationRaw = {
+      name: 'login'
     };
+
+    if (module) {
+      routeLocation.params = { module };
+    }
 
     const redirect = redirectUrl || route.value.fullPath;
 
-    options.query = {
-      redirect
-    };
+    if (redirect) {
+      routeLocation.query = { redirect };
+    }
 
-    return routerPushByKey('login', options);
+    return routerPush(routeLocation);
   }
 
   /**

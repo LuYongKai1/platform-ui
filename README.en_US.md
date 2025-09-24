@@ -40,7 +40,7 @@
 ## Version
 
 - **NaiveUI Version:**
-  - [Preview Link](https://naive.soybeanjs.cn/)
+  <!-- - [Preview Link](https://naive.soybeanjs.cn/) -->
   - [Github Repository](https://github.com/soybeanjs/soybean-admin)
   - [Gitee Repository](https://gitee.com/honghuangdc/soybean-admin)
 

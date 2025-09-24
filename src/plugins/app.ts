@@ -91,6 +91,7 @@ export function setupAppVersionNotification() {
 async function getHtmlBuildTime() {
   const baseUrl = import.meta.env.VITE_BASE_URL || '/';
 
+
   const res = await fetch(`${baseUrl}index.html?time=${Date.now()}`);
 
   const html = await res.text();

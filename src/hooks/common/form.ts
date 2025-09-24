@@ -52,20 +52,29 @@ export function useFormRules() {
   }
 
   /** create a rule for confirming the password */
+  // 创建确认密码的验证规则
   function createConfirmPwdRule(pwd: string | Ref<string> | ComputedRef<string>) {
+    // 定义确认密码的验证规则
     const confirmPwdRule: App.Global.FormRule[] = [
+      // 确认密码不能为空
       { required: true, message: $t('form.confirmPwd.required') },
       {
+        // 异步验证，确认密码与密码是否一致
         asyncValidator: (rule, value) => {
+          // 如果确认密码不为空且与密码不一致，则返回错误信息
           if (value.trim() !== '' && value !== toValue(pwd)) {
             return Promise.reject(rule.message);
           }
+          // 否则返回成功
           return Promise.resolve();
         },
+        // 错误信息
         message: $t('form.confirmPwd.invalid'),
+        // 触发时机
         trigger: 'input'
       }
     ];
+    // 返回确认密码的验证规则
     return confirmPwdRule;
   }
 

@@ -19,6 +19,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
+
 interface Emits {
   (e: 'select', menu: App.Global.Menu): boolean;
   (e: 'toggleSiderCollapse'): void;

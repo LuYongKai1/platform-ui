@@ -29,6 +29,7 @@ const transitionName = computed(() => (themeStore.page.animate ? themeStore.page
 function resetScroll() {
   const el = document.querySelector(`#${LAYOUT_SCROLL_EL_ID}`);
 
+
   el?.scrollTo({ left: 0, top: 0 });
 }
 </script>

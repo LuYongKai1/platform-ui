@@ -5,6 +5,7 @@ import { setupStore } from './store';
 import { setupRouter } from './router';
 import { setupI18n } from './locales';
 import App from './App.vue';
+import { clearJsonData } from '@/utils/indexedDB';
 
 async function setupApp() {
   setupLoading();
@@ -24,6 +25,9 @@ async function setupApp() {
   setupI18n(app);
 
   setupAppVersionNotification();
+
+  // // 在应用初始化时获取最新的数据包
+  // await clearJsonData();
 
   app.mount('#app');
 }

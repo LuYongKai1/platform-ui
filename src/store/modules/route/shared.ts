@@ -11,6 +11,7 @@ import { useSvgIcon } from '@/hooks/common/icon';
  */
 export function filterAuthRoutesByRoles(routes: ElegantConstRoute[], roles: string[]) {
   return routes.flatMap(route => filterAuthRouteByRoles(route, roles));
+
 }
 
 /**
@@ -21,6 +22,7 @@ export function filterAuthRoutesByRoles(routes: ElegantConstRoute[], roles: stri
  */
 function filterAuthRouteByRoles(route: ElegantConstRoute, roles: string[]): ElegantConstRoute[] {
   const routeRoles = (route.meta && route.meta.roles) || [];
+
 
   // if the route's "roles" is empty, then it is allowed to access
   const isEmptyRoles = !routeRoles.length;
@@ -132,6 +134,7 @@ function getGlobalMenuByBaseRoute(route: RouteLocationNormalizedLoaded | Elegant
 
   const label = i18nKey ? $t(i18nKey) : title!;
 
+
   const menu: App.Global.Menu = {
     key: name as string,
     label,
@@ -149,9 +152,14 @@ function getGlobalMenuByBaseRoute(route: RouteLocationNormalizedLoaded | Elegant
  *
  * @param routes Vue routes (two levels)
  */
+// 导出一个函数，用于获取缓存路由名称
 export function getCacheRouteNames(routes: RouteRecordRaw[]) {
+  // 定义一个数组，用于存储缓存路由名称
   const cacheNames: LastLevelRouteKey[] = [];
+  // 打印缓存路由名称数组
 
+
+  // 遍历路由数组
   routes.forEach(route => {
     // only get last two level route, which has component
     route.children?.forEach(child => {

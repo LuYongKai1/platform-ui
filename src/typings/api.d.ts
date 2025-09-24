@@ -29,7 +29,7 @@ declare namespace Api {
      * - "1": enabled
      * - "2": disabled
      */
-    type EnableStatus = '1' | '2';
+    type EnableStatus = '0' | '1';
 
     /** common record */
     type CommonRecord<T = any> = {
@@ -49,6 +49,43 @@ declare namespace Api {
   }
 
   /**
+   * namespace GmLog
+   *
+   * backend api module: "gmlog"
+   */
+  namespace GmLog {
+    /** GM log record */
+    interface GmLogRecord {
+      /** log id */
+      id: number;
+      /** game id */
+      gameId?: number;
+      /** operator */
+      operator: string;
+      /** GM code */
+      gmCode: string;
+      /** GM name */
+      gmName: string;
+      /** parameter JSON */
+      paramJson: string;
+      /** create date */
+      createDate: string;
+      /** server id */
+      serverId: number;
+      /** GM status */
+      gmStatus: number;
+      /** GM URL */
+      gmUrl: string;
+      /** role id */
+      roleId: string;
+      /** user id */
+      userId: string;
+      /** message */
+      msg: string;
+    }
+  }
+
+  /**
    * namespace Auth
    *
    * backend api module: "auth"
@@ -58,14 +95,102 @@ declare namespace Api {
       token: string;
       refreshToken: string;
     }
-
     interface UserInfo {
-      userId: string;
-      userName: string;
-      roles: string[];
-      buttons: string[];
+      msg: string;
+      code: number;
+      permissions: string[];
+      roles: {
+        createBy: string | null;
+        createTime: string | null;
+        updateBy: string | null;
+        updateTime: string | null;
+        remark: string | null;
+        params: { "@type": string };
+        roleId: number;
+        roleName: string;
+        roleKey: string;
+        roleSort: number;
+        dataScope: string;
+        menuCheckStrictly: boolean;
+        deptCheckStrictly: boolean;
+        status: string;
+        delFlag: string | null;
+        flag: boolean;
+        menuIds: any | null;
+        deptIds: any | null;
+        permissions: any | null;
+        admin: boolean;
+      }[];
+      user: {
+        createBy: string;
+        createTime: string;
+        updateBy: string | null;
+        updateTime: string | null;
+        remark: string;
+        params: { "@type": string };
+        userId: number;
+        deptId: number;
+        userName: string;
+        nickName: string;
+        email: string;
+        phonenumber: string;
+        sex: string;
+        avatar: string | null;
+        password: string;
+        status: string;
+        delFlag: string;
+        loginIp: string;
+        loginDate: string;
+        dept: {
+          createBy: string | null;
+          createTime: string | null;
+          updateBy: string | null;
+          updateTime: string | null;
+          remark: string | null;
+          params: { "@type": string };
+          deptId: number;
+          parentId: number;
+          ancestors: string;
+          deptName: string;
+          orderNum: number;
+          leader: string;
+          phone: string | null;
+          email: string | null;
+          status: string;
+          delFlag: string | null;
+          parentName: string | null;
+          children: any[];
+        };
+        roles: {
+          createBy: string | null;
+          createTime: string | null;
+          updateBy: string | null;
+          updateTime: string | null;
+          remark: string | null;
+          params: { "@type": string };
+          roleId: number;
+          roleName: string;
+          roleKey: string;
+          roleSort: number;
+          dataScope: string;
+          menuCheckStrictly: boolean;
+          deptCheckStrictly: boolean;
+          status: string;
+          delFlag: string | null;
+          flag: boolean;
+          menuIds: any | null;
+          deptIds: any | null;
+          permissions: any | null;
+          admin: boolean;
+        }[];
+        roleIds: any | null;
+        postIds: any | null;
+        roleId: any | null;
+        admin: boolean;
+      };
     }
   }
+
 
   /**
    * namespace Route
@@ -92,7 +217,6 @@ declare namespace Api {
    */
   namespace SystemManage {
     type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'size'>;
-
     /** role */
     type Role = Common.CommonRecord<{
       /** role name */
@@ -101,6 +225,11 @@ declare namespace Api {
       roleCode: string;
       /** role description */
       roleDesc: string;
+      roleKey: string;
+      roleSort: null[];
+      displayOrder: number;
+      remark: string;
+      visible: string;
     }>;
 
     /** role search params */
@@ -120,40 +249,508 @@ declare namespace Api {
      * - "1": "male"
      * - "2": "female"
      */
-    type UserGender = '1' | '2';
+    type UserGender = '0' | '1';
 
     /** user */
     type User = Common.CommonRecord<{
-      /** user name */
       userName: string;
-      /** user gender */
-      userGender: UserGender | null;
-      /** user nick name */
+      sex: null;
       nickName: string;
-      /** user phone */
-      userPhone: string;
-      /** user email */
-      userEmail: string;
-      /** user role code collection */
+      phonenumber: string;
+      email: string;
+      password: string;
       userRoles: string[];
+      avatar: string | null;
+      userId: number;
+      loginIp: string;
+      loginDate: string | null;
     }>;
 
     /** user search params */
     type UserSearchParams = CommonType.RecordNullable<
-      Pick<Api.SystemManage.User, 'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'status'> &
-        CommonSearchParams
+      Pick<Api.SystemManage.User, 'userName' | 'sex' | 'nickName' | 'phonenumber' | 'email' | 'status'> &
+      CommonSearchParams
     >;
+
 
     /** user list */
     type UserList = Common.PaginatingQueryRecord<User>;
 
+    /** game status */
+    type GameStatus = '0' | '1'; // 0:错误 1:正常
+    type Usermerge = '0' | '1'; // 0:数据隔离 1:数据打通
+
+    type GameSearchParams = CommonType.RecordNullable<
+      Pick<Api.SystemManage.Game, 'gameAlias' | 'gameName'> &
+      CommonSearchParams
+    >;
+
+    /** game */
+    type Game = Common.CommonRecord<{
+      gameId: string;
+      gameName: string;
+      gameAlias: string;
+      callbackUrl: string;
+      gmUrl: string;
+      gameKey: string;
+      gameSecret: string;
+      enable: GameStatus | null;
+      channelIds: string;
+      userMerge: string;
+    }
+    >;
+
+    /** 渠道 params */
+
     /**
-     * menu type
-     *
-     * - "1": directory
-     * - "2": menu
-     */
-    type MenuType = '1' | '2';
+    type Channelenable = '0' | '1';
+
+    /** 渠道 */
+    type channel = Common.CommonRecord<{
+      channelId: string;
+      channelName: string;
+      channelBriefName: string;
+      channelUserTotal: string;
+      createDate: string;
+      updateDate: string;
+      enable: string;
+    }>
+
+    /** 渠道 search params */
+
+    /** 渠道 list */
+    type channelList = Common.PaginatingQueryRecord<channel>;
+
+    type channeSearchParams = CommonType.RecordNullable<
+      Pick<Api.SystemManage.channel, 'channelId' | 'channelName'> & CommonSearchParams
+    >;
+
+
+    /** 区服 */
+    type serverType = '0' | '1';
+
+    /** 服务器类型 */
+    type ServerTypeCategory = 'NORMAL' | 'CROSS' | 'MERGE';
+
+    type serverregion = Common.CommonRecord<{
+      id: string;
+      gameId: number;
+      regionName: string;
+      regionIndex: string;
+      clientVersionMin: string;
+      clientVersionMax: string;
+      resUrl: string;
+      maintenance: string;
+      commonHost: string;
+      commonPort: string;
+      maintenanceMsg: string;
+      channelMedia: string;
+      whiteList: string;
+      groupList: string;
+    }>
+
+
+
+    /** 服务器管理 */
+
+    // 服务器可见
+    // INVISIBLE:不可见;WHITE:白名单;VISIBLE:可见
+    type serverVisible = 'INVISIBLE' | 'VISIBLE';
+    // 服务器状态
+    //对外显示的服务器状态：0:正常;1:繁忙;2:爆满3：关闭 4:维护;5:隐藏
+    type serverStatus = '0' | '1' | '2' | '3' | '4' | '5';
+
+    type serverStatusadd = '0' | '4' | '5';
+
+    // 推荐状态
+    type serverRecommend = '0' | '1'; // 0:不推荐 1:推荐
+    // 新服状态
+    type serverNew = '0' | '1'; // 0:非新服 1:新服
+
+    // 服务器运行状态
+    type serverRunState = '0' | '1' | '2' | '3'; // 0:正常 1:警告 2:离线 3:维护
+
+
+    type serveritem = Common.CommonRecord<{
+      id: string;
+      groupId: string;
+      serverId: string;
+      serverName: string;
+      serverIp: string;
+      serverPort: string;
+      intranetIp: string;
+      serverOpenDate: string;
+      urlCallback: string;
+      urlGm: string;
+      serverVisible: string;
+      serverStatus: string;
+      serverNew: string;
+      serverRecommend: string;
+      extendParam: string;
+      serverHot: string;
+      busyUser: string;
+      fullUser: string;
+      maxUser: string;
+      serverType: string;
+    }>
+
+    //开启排队
+    type serverqueue = Common.CommonRecord<{
+      gameId: string;
+      setto: string;
+      serverList: string;
+    }>
+
+    /** 白名单管理  */
+
+    type whiteTypeIp = '0' | '1' | '2' | '3' | '4';  // 0:用户白名单 1:IP白名单 2:IP黑名单 3:IP白名单(受限) 4:账号白名单(受限)
+
+    type serverwhite = Common.CommonRecord<{
+      type: string;
+      channel: string;
+      param: string;
+      status: string;
+      description: string;
+    }>
+
+
+    /** 服务器分组 search params */
+    type servergroupTest = '0' | '1'; // 0:正常分组 1:测试分组
+
+    type servergroup = Common.CommonRecord<{
+      gameId: string;
+      groupIndex: number;
+      groupName: string;
+      groupTag: string;
+      groupTest: string;
+      createDate: string;
+      updateDate: string;
+    }>
+
+    /** 日志服管理 log */
+    type serversaveEnble = '0' | '1'; // 0: 暂不入库 1:立即入库
+    type serverenable = '0' | '1'; //  0:关闭 1正常
+
+    type serverlog = Common.CommonRecord<{
+      gameId: string;
+      logName: string;
+      logIp: string;
+      logPort: string;
+      saveEnable: string;
+      groupList: string;
+      enable: string;
+      updateDate: string;
+    }>;
+
+    /** gmusem  */
+    type gmusem = Common.CommonRecord<{
+      userId: string;
+      keepTime: string;
+      banReason: string;
+      banChatting: string;
+    }>;
+
+    type gmrole = Common.CommonRecord<{
+      roleId: string;
+      keepTime: string;
+      banReason: string;
+      banChatting: string;
+    }>;
+
+    type noticeType = '0' | '1' | '2'; // 0:公告 1:活动 2:节日
+    type noticeExplain = 'null' | '0' | '1'; // null:无 0:热 1:新
+    type noticeenable = '0' | '1'; //  0:启用 1停用
+
+    type norice = Common.CommonRecord<{
+      noticeName: string;
+      noticeIndex: string;
+      noticeType: string;
+      noticeExplain: string;
+      enable: string;
+      startDate: string;
+      endDate: string;
+      noticeContent: string;
+      groupId: string;
+      gameId: string;
+      regionId: string;
+    }>;
+
+    type marquee = Common.CommonRecord<{
+      marqueeName: string;
+      marqueeContent: string;
+      serverIds: string;
+      roundTimes: string;
+      roundDelay: string;
+      startTime: string;
+    }>;
+
+
+    /*区服邮件*/
+    type operateServer = Common.CommonRecord<{
+      mailRemark: string;
+      mailId: string;
+      mailTitle: string;
+      mailExpire: string;
+      mailContent: string;
+      mailSendDate: string;
+      mailServerJson: string;
+      activeFrom: string;
+      activeTo: string;
+      goodsJson: string;
+      createRoleAfter: string;
+      createRoleBefore: string;
+    }>;
+
+    // 公会邮件
+    type operateGuild = Common.CommonRecord<{
+      mailRemark: string;
+      mailId: string;
+      mailTitle: string;
+      mailExpire: string;
+      mailContent: string;
+      mailSendDate: string;
+      serverId: string;
+      goodsJson: string;
+      mailGuildJson: string;
+    }>;
+
+    /*多人邮件*/
+    type operateMulti = Common.CommonRecord<{
+      mailRemark: string;
+      mailId: string;
+      mailTitle: string;
+      mailExpire: string;
+      mailContent: string;
+      mailSendDate: string;
+      mailRolesJson: string;
+      goodsJson: string;
+    }>
+
+    /*模板管理*/
+    type template = Common.CommonRecord<{
+      templateName: string;
+      gmParam: string;
+    }>
+
+    /*活动管理*/
+    type activity = Common.CommonRecord<{
+      name: string;
+      templateId: string;
+      servers: string;
+      startTime: string;
+      endTime: string;
+      imageUrl: string;
+    }>
+
+    /* 区服活动 */
+    type serverState = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' ;
+    // 活动大类型
+    type activityBigType = '0' | '1' | '2' | '3' | '4' | '5' | '6' ;
+
+    // 活动小类型 - 排行榜
+    type activitySmallTypeRank = '0' | '1';
+
+    // 活动小类型 - 任务
+    type activitySmallTypeTask = '0' | '1' | '2' | '3' | '4' | '5' | '6';
+
+    // 活动小类型 - 地图
+    type activitySmallTypeMap = '0' | '1' | '2';
+
+    // 活动小类型 - 商城
+    type activitySmallTypeShop = '0' | '1' | '2';
+
+    // 活动小类型 - 收益
+    type activitySmallTypeIncome = '0' | '1';
+
+    // 活动小类型 - 商城类型活动
+    type activitySmallTypeShopActivity = '0' | '1' | '2';
+
+    type activitygm = Common.CommonRecord<{
+      name: string;
+      description: string;
+      status: string;
+    }>
+
+    type activitygmparams = Common.CommonRecord<{
+      activeGmId: string | null;
+      paramName: string;
+      paramIndex: number;
+      status: string;
+    }>
+
+    type activityimages = Common.CommonRecord<{
+      name: string;
+      url: string;
+      servers: string;
+      endTime: number;
+      startTime: number;
+    }>
+
+    type maintenanceNotice = Common.CommonRecord<{
+      title: string;
+      content: string;
+      banner: string;
+      linitTime: string;
+      publishTime: string;
+    }>
+
+    /** 商品管理 */
+    type productType = 'SDK' | 'WEB';
+    type productStatus = 'true' | 'false'; // true:启用 false:禁用
+
+    type product = Common.CommonRecord<{
+      chanelName: string;
+      gameId: string;
+      productId: number;
+      productIndex: number;
+      channelProductId: string;
+      gameProductId: string;
+      productName: string;
+      productPrice: number;
+      nativePrice: number;
+      dollarPrice: number;
+      productNumber: number;
+      productDescribe: string;
+      productType: string | null;
+      enable: string;
+      otherSetting: string;
+      platformChannelId: string;
+    }>
+
+    /** 元宝商城 */
+    // 购买前置条件设置
+    type saleType = 'NONE ' | 'SERVEROPEN ' | 'CHARACTER_LEVEL ' | 'ACHIEVEMENT ' | 'QUEST ' | 'RETURN_DAY_COUNT ' | 'UNIQUE_PET_GAIN ' | 'EPIC_PET_GAIN ' | 'LEGEND_PET_GAIN ' | 'UNIQUE_REFLECTION_GAIN ' | 'EPIC_REFLECTION_GAIN ' | 'LEGEND_REFLECTION_GAIN ' | 'HERO_REFLECTION_GAIN ' | 'EndEnum ';
+    // 限购类型
+    type limitType =
+      | 'NONE'
+      | 'DAILY_LIMIT'
+      | 'WEEKLY_LIMIT'
+      | 'MONTHLY_LIMIT'
+      | 'ACCOUNT'
+      | 'SERVER'
+      | 'CHARACTER'
+      | 'ACCOUNT_LIMIT'
+      | 'ACCOUNT_DAILY_LIMIT'
+      | 'ACCOUNT_WEEKLY_LIMIT'
+      | 'ACCOUNT_MONTHLY_LIMIT'
+      | 'SERVER_LIMIT'
+      | 'SERVER_DAILY_LIMIT'
+      | 'SERVER_WEEKLY_LIMIT'
+      | 'SERVER_MONTHLY_LIMIT'
+      | 'CHARACTER_LIMIT'
+      | 'CHARACTER_DAILY_LIMIT'
+      | 'CHARACTER_WEEKLY_LIMIT'
+      | 'CHARACTER_MONTHLY_LIMIT'
+      | 'CASHSHOP_EXCHANGE1_CHARACTER_LIMIT'
+      | 'CASHSHOP_EXCHANGE2_SERVER_LIMIT'
+      | 'CASHSHOP_EXCHANGE2_SERVER_DAILY_LIMIT'
+      | 'CASHSHOP_EXCHANGE2_CHARACTER_LIMIT'
+      | 'CASHSHOP_EXCHANGE2_CHARACTER_DAILY_LIMIT'
+      | 'SCHEDULE_LIMIT'
+      | 'EndEnum';
+    // 商品状态显示与隐藏
+    type HideInClient = 'true' | 'false';
+    // 是否周显示
+    type saleWeekType = 'true' | 'false';
+    // 是否开启折扣
+    type discountRate = '1' | '0';
+
+    type gemsShop = Common.CommonRecord<{
+      id: number;
+      gameid: string;
+      serverId: string;
+      nameId: string;
+      price: number;
+      discountRate: string;
+      saleType: string | null;
+      discountPrice: number;
+      limitType: string | null;
+      limitCount: number;
+      requireLevel: number;
+      sellCategoryOrder: number;
+      hideInClient: string | null;
+      saleStartData: string | null;
+      saleCloseData: string | null;
+      saleWeekType: string;
+      saleMonday: string;
+      saleTuesday: string;
+      saleWednesday: string;
+      saleThursday: string;
+      saleFriday: string;
+      saleSaturday: string;
+      saleSunday: string;
+    }>
+
+    /** 服务器文件 */
+    // 定义根目录
+    type RootDirectory = 'table' | 'script' | 'script/cabin' | 'script/common' | 'script/config_tables' | 'script/framework' | 'script/header' | 'script/hotfix' | 'script/proto' | 'script/rebot' | 'script/scheduler' | 'script/test_client' | 'script/test_server' | 'script/world';
+
+    /** 订单管理 */
+    type OrderStatus = '0' | '1' | '2' | '3' | '4' | '5'| '6';
+
+    type callbackStatus = '0' | '1' | '2'  ;
+
+    /* 问卷管理 */
+    type questionnaire = Common.CommonRecord<{
+      title: string;
+      richContentMd: string;
+      unlockType: string;
+      unlockLevel: Number;
+      wjxUrl: string;
+      goodsJson: string;
+      createdBy: string;
+      status: string;
+      mailId: string;
+      mailTitle: string;
+      mailContent: string;
+    }>;
+
+    // 解锁类型
+    type unlockType = "1"
+    // 问卷状态
+    type questionnaireStatus = '0' | '1';
+
+
+
+    // 礼包活动配置
+    // 礼包类型
+    type giftType = '1' | '2';
+    // 渠道和区服类型
+    type scopeType = '0' | '1';
+    // 礼包活动状态 状态：1=启用；2=停用；3=归档
+    type giftActivityStatus = '1' | '2' | '3';
+
+    type giftActivity = Common.CommonRecord<{
+      campaignCode: string;
+      name: string;
+      scopeChannel: string;
+      scopeServer: string;
+      perUserLimit: number;
+      perDeviceLimit: number;
+      perIpLimit: string;
+      totalLimit: string;
+      startTime: string;
+      endTime: string;
+      goodsJson: string;
+      status: string;
+      remark: string;
+    }>;
+
+    /* 礼包批次 */
+    // 批次状态 0=初始化；1=生成中；2=完成；3=已取消
+    type giftBatchStatus = '0' | '1' | '2' | '3' ;
+
+    type giftBatch = Common.CommonRecord<{
+      campaignId: string;
+      codeType: string;
+      codePrefix: string;
+      codeLen: string | null;
+      amount: number | null;
+      maxRedeemCount: string | null;
+      customUsePrefixOnly: string ;
+    }>;
+
+
 
     type MenuButton = {
       /**
@@ -166,60 +763,39 @@ declare namespace Api {
       desc: string;
     };
 
-    /**
-     * icon type
-     *
-     * - "1": iconify icon
-     * - "2": local icon
-     */
+    // 菜单
     type IconType = '1' | '2';
-
-    type MenuPropsOfRoute = Pick<
-      import('vue-router').RouteMeta,
-      | 'i18nKey'
-      | 'keepAlive'
-      | 'constant'
-      | 'order'
-      | 'href'
-      | 'hideInMenu'
-      | 'activeMenu'
-      | 'multiTab'
-      | 'fixedIndexInTab'
-      | 'query'
-    >;
+    type MenuType = 'M' | 'C' | "F";
+    type visibleStatus = '0' | '1';
 
     type Menu = Common.CommonRecord<{
-      /** parent menu id */
-      parentId: number;
-      /** menu type */
-      menuType: MenuType;
-      /** menu name */
       menuName: string;
-      /** route name */
       routeName: string;
-      /** route path */
+      path: string;
       routePath: string;
-      /** component */
-      component?: string;
-      /** iconify icon name or local icon name */
+      component: string;
+      order: number;
+      i18nKey: string | null;
       icon: string;
-      /** icon type */
-      iconType: IconType;
-      /** buttons */
-      buttons?: MenuButton[] | null;
-      /** children menu */
-      children?: Menu[] | null;
-    }> &
-      MenuPropsOfRoute;
-
-    /** menu list */
-    type MenuList = Common.PaginatingQueryRecord<Menu>;
+      status: string;
+      visible: string;
+      parentId: number;
+      keepAlive: boolean;
+      constant: boolean;
+      href: string | null;
+      activeMenu: string | null;
+      multiTab: boolean;
+      fixedIndexInTab: number | null;
+      perms: string;
+    }>
 
     type MenuTree = {
       id: number;
       label: string;
       pId: number;
       children?: MenuTree[];
+      menuId: number;
+      menuType: string; // M: 目录, C: 菜单, F: 按钮
     };
   }
 }

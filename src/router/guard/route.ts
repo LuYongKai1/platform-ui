@@ -26,6 +26,7 @@ export function createRouteGuard(router: Router) {
     }
 
     const authStore = useAuthStore();
+    // console.log('User Roles:', authStore.userInfo); // 打印用户角色
 
     const rootRoute: RouteKey = 'root';
     const loginRoute: RouteKey = 'login';
@@ -35,7 +36,10 @@ export function createRouteGuard(router: Router) {
     const needLogin = !to.meta.constant;
     const routeRoles = to.meta.roles || [];
 
-    const hasRole = authStore.userInfo.roles.some(role => routeRoles.includes(role));
+    // Get roles from the correct structure in userInfo
+    const userRoles = authStore.userInfo.roles.map((role: any) => role.roleKey || role.roleName);
+
+    const hasRole = userRoles.some((role: string) => routeRoles.includes(role));
     const hasAuth = authStore.isStaticSuper || !routeRoles.length || hasRole;
 
     // if it is login route when logged in, then switch to the root page
@@ -52,7 +56,9 @@ export function createRouteGuard(router: Router) {
 
     // the route need login but the user is not logged in, then switch to the login page
     if (!isLogin) {
-      next({ name: loginRoute, query: { redirect: to.fullPath } });
+      // next({ name: loginRoute, params: { module: 'pwd-login' }, query: { redirect: to.fullPath } });  
+      // //登录时不携带参数
+      next({ path: '/login/pwd-login', query: { redirect: to.fullPath } });
       return;
     }
 
@@ -111,6 +117,7 @@ async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw 
 
     const location: RouteLocationRaw = {
       name: loginRoute,
+      params: { module: 'pwd-login' },
       query
     };
 

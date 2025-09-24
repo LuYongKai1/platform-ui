@@ -1,6 +1,6 @@
 import { computed, effectScope, nextTick, onScopeDispose, ref, watch } from 'vue';
 import * as echarts from 'echarts/core';
-import { BarChart, GaugeChart, LineChart, PictorialBarChart, PieChart, RadarChart, ScatterChart } from 'echarts/charts';
+import { BarChart, GaugeChart, LineChart, PictorialBarChart, PieChart, RadarChart, ScatterChart, HeatmapChart } from 'echarts/charts';
 import type {
   BarSeriesOption,
   GaugeSeriesOption,
@@ -12,15 +12,18 @@ import type {
 } from 'echarts/charts';
 import {
   DatasetComponent,
+  DataZoomComponent,
   GridComponent,
   LegendComponent,
   TitleComponent,
   ToolboxComponent,
   TooltipComponent,
-  TransformComponent
+  TransformComponent,
+  VisualMapComponent
 } from 'echarts/components';
 import type {
   DatasetComponentOption,
+  DataZoomComponentOption,
   GridComponentOption,
   LegendComponentOption,
   TitleComponentOption,
@@ -46,6 +49,7 @@ export type ECOption = echarts.ComposeOption<
   | GridComponentOption
   | ToolboxComponentOption
   | DatasetComponentOption
+  | DataZoomComponentOption
 >;
 
 echarts.use([
@@ -54,6 +58,7 @@ echarts.use([
   TooltipComponent,
   GridComponent,
   DatasetComponent,
+  DataZoomComponent,
   TransformComponent,
   ToolboxComponent,
   BarChart,
@@ -65,7 +70,9 @@ echarts.use([
   GaugeChart,
   LabelLayout,
   UniversalTransition,
-  CanvasRenderer
+  CanvasRenderer,
+  VisualMapComponent,
+  HeatmapChart
 ]);
 
 interface ChartHooks {
